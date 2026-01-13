@@ -195,7 +195,7 @@ async function preProcessHeic(file) {
 async function preProcessAvif(file) {
   console.log("Preprocessing AVIF image...");
   const image = await lib.imageCompression(file, config.avifPreProcessOptions);
-  return { preProcessedImage: image, preProcessedNewFileType: "image/jpeg" };
+  return { preProcessedImage: image, preProcessedNewFileType: "image/png" };
 }
 
 async function preProcessIco(file) {

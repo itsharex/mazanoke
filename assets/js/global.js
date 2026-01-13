@@ -92,7 +92,7 @@ app.config.avifPreProcessOptions = {
   maxWidthOrHeight: app.config.form.limitDimensions,
   useWebWorker: true,
   preserveExif: false,
-  fileType: "image/jpeg",
+  fileType: "image/png",
   libURL: "./browser-image-compression.js",
   alwaysKeepResolution: true,
 };
