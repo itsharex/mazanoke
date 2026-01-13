@@ -50,18 +50,11 @@ async function compressImageQueue() {
     return;
   }
 
-  // Decode and parase image to validate options.
+  // Decode and parse image to validate options.
   const options = await createCompressionOptions((p) => currentProgress(p, i, file.name), file);
   // Preprocess image when needed (e.g., decoding or precompress image).
-  const { preProcessedImage, preProcessedNewFileType } = await preProcessImage(file);
+  const { preProcessedImage } = await preProcessImage(file);
   const selectedFormat = getCheckedValue(ui.inputs.formatSelect)
-
-  if (preProcessedImage) {
-    options.fileType = preProcessedNewFileType;
-  }
-  if (isPostProcessingRequired(selectedFormat)) {
-    options.fileType = 'image/png';
-  }
 
   // Perform image compression
   lib.imageCompression((preProcessedImage || file), options)
