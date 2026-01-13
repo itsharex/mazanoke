@@ -108,19 +108,17 @@ function isFileExt(file, extension = "") {
 function getFileType(file) {
   let selectedFormat = getCheckedValue(ui.inputs.formatSelect);
   let inputFileType = file.type;
-  let inputFileExtension = "";
+  const inputFileExtension = mimeToExtension(file.type) || "";
   let outputFileExtension = "";
 
   if (selectedFormat && selectedFormat !== "default") {
     // The user-selected format to convert to.
     const extension = mimeToExtension(selectedFormat);
-    inputFileExtension = extension;
     outputFileExtension = extension;
   } else {
     // User has not selected a file format, use the input image's file type.
     selectedFormat = file.type || "png";
     file.type = !file.type && isHeicExt(file) ? "image/heic" : file.type;
-    inputFileExtension = mimeToExtension(file.type) || "";
 
     console.log("inputFileExtension: ", inputFileExtension);
     outputFileExtension = mimeToExtension(defaultConversionMapping(file.type));
