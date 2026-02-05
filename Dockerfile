@@ -25,4 +25,4 @@ COPY --from=prepare /usr/share/nginx/html /usr/share/nginx/html
 
 EXPOSE 80
 
-CMD ["/bin/sh", "-c", "if [ -n \"$USERNAME\" ] && [ -n \"$PASSWORD\" ]; then /usr/local/bin/basicauth.sh; fi; nginx -g 'daemon off;'"]
+CMD ["/bin/sh", "-c", "/usr/local/bin/basicauth.sh; nginx -g 'daemon off;'"]
