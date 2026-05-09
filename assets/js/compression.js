@@ -247,11 +247,11 @@ async function preProcessAvif(file) {
 
 async function preProcessIco(file) {
   const arrayBuffer = await file.arrayBuffer();
-  if (!lib.icoJs.isICO(arrayBuffer)) {
+  if (!lib.icoJs.isIco(arrayBuffer)) {
     return { preProcessedImage: null, preProcessedNewFileType: null };
   }
 
-  const parsedIco = await lib.icoJs.parseICO(arrayBuffer, "image/png");
+  const parsedIco = await lib.icoJs.decodeIco(arrayBuffer, "image/png");
   const rawImage = parsedIco[0];
   const blob = await decodeImageBufferToBlob(rawImage.buffer, "image/png", 1);
   return { preProcessedImage: blob, preProcessedNewFileType: "image/png" };
@@ -341,13 +341,10 @@ async function postProcessImage(file, selectedFormat, dimensions) {
 }
 
 async function postProcessToIco(pngFile) {
-  const inputs = [{ png: pngFile, ignoreSize: true }];
-
   try {
-    return await new lib.pngToIco().convertToBlobAsync(
-      inputs,
-      "image/vnd.microsoft.icon",
-    );
+    const arrayBuffer = await pngFile.arrayBuffer();
+    const ico = await lib.icoJs.encodeIco([{ buffer: arrayBuffer }]);
+    return new Blob([ico]);
   } catch (e) {
     console.error(e);
     const msg = e.message;
