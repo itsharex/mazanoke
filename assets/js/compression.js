@@ -172,6 +172,14 @@ async function preProcessImage(file) {
     return await preProcessTiff(file);
   }
 
+  if (file.type === "image/svg+xml") {
+    try {
+      return await preProcessSvg(file);
+    } catch {
+      console.warn('Could not preprocess SVG');
+    }
+  }
+
   return { preProcessedImage: null, preProcessedNewFileType: null };
 }
 
@@ -210,6 +218,51 @@ async function preProcessTiff(file) {
   const rgba = lib.utif.toRGBA8(ifds[0]);
   const parsedTiff = await encodeImageRgbaToBlob(rgba, ifds[0].width, ifds[0].height, "image/png", 1);
   return { preProcessedImage: parsedTiff, preProcessedNewFileType: "image/png" };
+}
+
+/**
+ * Preprocess an SVG image by checking for width and height attributes and
+ * adding them if missing
+ * 
+ * This sidesteps an issue in certain versions of Firefox in which SVG files
+ * without those attributes fail to load within the canvas during processing
+ * 
+ * @param {File} file - The image to process
+ * @returns {Object} - An object containing:
+ *   @property {File} - The preprocessed image
+ *   @property {String} - The MIME type of the preprocessed image
+ */
+async function preProcessSvg(file) {
+  console.info("Preprocessing SVG image…");
+
+  const text = await file.text();
+  const parser = new DOMParser();
+
+  const svgDocument = parser.parseFromString(text, 'image/svg+xml');
+  const svgElement = svgDocument.querySelector('svg');
+  const widthAttribute = svgElement.getAttribute('width');
+  const heightAttribute = svgElement.getAttribute('height');
+
+  if (widthAttribute && heightAttribute) {
+    return { preProcessedImage: file, preProcessedNewFileType: "image/svg+xml" };
+  }
+
+  const viewBox = svgElement.getAttribute('viewBox');
+  const [minX, minY, width, height] = 
+    viewBox?.split(' ').map(part => Number(part)) ?? [ 0, 0, 2_048, 2_048];
+
+  svgElement.setAttribute('width', width - minX);
+  svgElement.setAttribute('height', height - minY);
+
+  const serializer = new XMLSerializer();
+
+  const updatedFile = new File(
+    [ serializer.serializeToString(svgDocument) ],
+    file.name, 
+    { type: 'image/svg+xml' }
+  );
+
+  return { preProcessedImage: updatedFile, preProcessedNewFileType: "image/svg+xml" };
 }
 
 async function postProcessImage(file, selectedFormat, dimensions) {
