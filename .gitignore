@@ -10,3 +10,4 @@ Thumbs.db
 .env.local
 *.secret
 .env
+.mazanoke
