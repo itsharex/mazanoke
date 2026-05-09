@@ -11,3 +11,4 @@ services:
       - PASSWORD=test
     ports:
       - "3475:80"
+    restart: unless-stopped

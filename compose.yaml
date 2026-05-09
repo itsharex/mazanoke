@@ -6,3 +6,4 @@ services:
     image: ghcr.io/civilblur/mazanoke:latest
     ports:
       - "3474:80"
+    restart: unless-stopped
