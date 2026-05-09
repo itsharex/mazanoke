@@ -117,11 +117,11 @@ function getFileType(file) {
     outputFileExtension = extension;
   } else {
     // User has not selected a file format, use the input image's file type.
-    selectedFormat = file.type || "png";
     file.type = !file.type && isHeicExt(file) ? "image/heic" : file.type;
+    selectedFormat = defaultConversionMapping(file.type) || "png";
 
     console.log("inputFileExtension: ", inputFileExtension);
-    outputFileExtension = mimeToExtension(defaultConversionMapping(file.type));
+    outputFileExtension = mimeToExtension(selectedFormat);
     console.log("outputFileExtension: ", outputFileExtension);
   }
 
